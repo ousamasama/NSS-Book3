@@ -4416,7 +4416,15 @@ for (i = 0; i < githubData.length; i++) {
         totalCommits = totalCommits + githubData[i].payload.pull_request.commits
     }
 }
-console.log(totalCommits)
+console.log("totalCommits with pull_request.commits", totalCommits)
+
+let totalCommits2 = 0;
+githubData.forEach((event) => {
+  if(event.payload.hasOwnProperty("commits")){
+    totalCommits2 += event.payload.commits.length;
+  }
+})
+console.log("totalCommits without pull_request.commits", totalCommits2)
 
 // 2. How many of each event type are there? (PullRequestEvent, PushEvent, etc)
 
@@ -4438,6 +4446,18 @@ for (i = 0; i < githubData.length; i++) {
         createEvent += 1
     }
 }
+
+let allEvents = [];
+githubData.forEach((event) => {
+  allEvents.push(event.type)
+})
+
+let eventCount = {};
+
+allEvents.forEach((i) => {
+  eventCount[i] = (eventCount[i] || 0) + 1
+})
+console.log(eventCount)
 
 // different way: 
 
@@ -4476,17 +4496,55 @@ console.log(userList)
 
 // 4. List all repositories on which Steve had an event, and show how many events were on each one.
 
-// let steveRepoArrayIds = [];
-// let steveEventsArray = {};
-// let arrayCounter = 0;
-// for (i = 0; i < githubData.length; i++) {
-//     if(githubData[i].actor.login === "stevebrownlee") {
-//         // steveRepoArrayIds.push(githubData[i].repo.id)
-//         // steveEventsArray.push(githubData[i].type)
-//         console.log(githubData[i].repo.id + githubData[i].type)
-        
-//     }
-// }
+//For loop that creates array of unique ids in object
+
+let steveRepoArrayIds = [];
+let steveEventsArray = [];
+let arrayCounter = 0;
+
+function containsObject(object, array) {
+  for(let i = 0; i < array.length; i++) {
+    if(object.id === array[i].id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+for (i = 0; i < githubData.length; i++) {
+    if(githubData[i].actor.login === "stevebrownlee") {
+      //if array contains repo id that already exits, don't add to array
+      let steveObject = {
+        id: githubData[i].repo.id,
+        repo_events: []
+      };
+      if (!containsObject(steveObject, steveRepoArrayIds))
+        steveRepoArrayIds.push(steveObject);
+        // steveEventsArray.push(githubData[i].type)
+        // console.log(githubData[i].repo.id + githubData[i].type)
+    }
+}
+
+for (i = 0; i < githubData.length; i++) {
+  let currentSelectedObject = githubData[i];
+  if(currentSelectedObject.actor.login === "stevebrownlee") {
+    for (j = 0; j < steveRepoArrayIds.length; j++) {
+      let currentSteveObject = steveRepoArrayIds[j];
+      if (currentSteveObject.id === currentSelectedObject.repo.id) {
+        // console.log("currentSteveObject.repo_id", currentSteveObject.repo_id)
+        let repo_object = {};
+        repo_object[currentSelectedObject.id] = currentSelectedObject.type;
+        currentSteveObject.repo_events.push(repo_object)
+      }
+    }
+  }
+}
+
+for (i = 0; i < steveRepoArrayIds.length; i++) {
+  console.log(steveRepoArrayIds[i].id + " has " + steveRepoArrayIds[i].repo_events.length + " events.")
+}
+
+console.log("steveRepoArrayIds", steveRepoArrayIds)
 
 // 5. Which event had the most number of commits?
 let greatestNumber = 0;
@@ -4500,4 +4558,11 @@ for (i = 0; i < githubData.length; i++) {
 console.log(greatestNumber)
 
 // 6. Which programming langugages were affected by Steve's events?
+
+for(let i = 0; i < githubData.length; i++) {
+  if(githubData[i].payload.hasOwnProperty("pull_request")) {
+    console.log(githubData[i].payload.pull_request.head.repo.language)
+  }
+}
+
 // 7. What programming language was the most affected by Steve's events?
