@@ -106,3 +106,28 @@ for (let i = 0; i < students.length; i++) {
         articleContainer.innerHTML += student(students[i].name, students[i].class, students[i].info)
     }
 }
+
+//joe's way
+
+// const student = (name, classroom, info, status) => `
+//     <div id="student">
+//         ${h1(name, status)}
+//         ${section(classroom, "section--padded")}
+//         ${aside(info, "pushRight")}
+//     </div>
+// `
+
+// students.forEach((currentStudent) => {
+//     let studentComponent = ""
+//     if (currentStudent.score >= 60) {
+//         studentComponent = student(currentStudent.name,currentStudent.class, currentStudent.info, "passing")
+//     } else {
+//         studentComponent = student(currentStudent.name,currentStudent.class, currentStudent.info, "failing")
+//     }
+//     document.querySelector("#container").innerHTML += 
+//     `${studentComponent}`
+// })
+
+// const h1 = (title, style) => {
+//     return `<h1 class="${style}">${title}</h1>`
+// }
