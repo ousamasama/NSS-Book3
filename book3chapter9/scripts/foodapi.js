@@ -1,9 +1,5 @@
 console.log("howdy")
 
-function kCalToCal(kcal) {
-    kcal / 1000;
-}
-
 fetch("http://localhost:8088/food/")
     //makes the data into json
     .then( (foodData) => foodData.json())
